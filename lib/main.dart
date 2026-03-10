@@ -13,7 +13,9 @@ import 'package:vdb_realtek/screens/device_landing_screen.dart';
 
 
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   runApp(ChangeNotifierProvider(
     create: (_) => UserProvider(),
     child: const MyApp(),

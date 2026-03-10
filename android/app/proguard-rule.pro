@@ -1,0 +1,5 @@
+-keep class org.webrtc.** { *; }
+-keep class com.cloudwebrtc.webrtc.** { *; }
+-keep class io.flutter.** { *; }
+-dontwarn org.webrtc.**
+-keep class androidx.media.** { *; }
