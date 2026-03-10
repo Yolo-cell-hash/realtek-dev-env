@@ -73,9 +73,8 @@ class _LoginFormState extends State<LoginForm> {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Card(
+                Container(
                   color: theme.colorScheme.secondary,
-                  elevation: 4.0,
                   margin: const EdgeInsets.symmetric(horizontal: 24),
                   child: Padding(
                     padding: const EdgeInsets.all(20),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'package:vdb_realtek/screens/wifi_configuration_screen.dart';
+import 'package:vdb_realtek/screens/property_configuration_screen.dart';
+
 
 class AddDevicesWidget extends StatefulWidget {
   const AddDevicesWidget({super.key});
@@ -22,7 +23,7 @@ class _AddDevicesWidgetState extends State<AddDevicesWidget> {
 
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const WifiConfigurationScreen()),
+          MaterialPageRoute(builder: (context) => const PropertyConfigurationScreen()),
         );
 
       },

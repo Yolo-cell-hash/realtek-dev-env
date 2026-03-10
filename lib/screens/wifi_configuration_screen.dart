@@ -13,9 +13,11 @@ class _WifiConfigurationScreenState extends State<WifiConfigurationScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      body: const WifiConfigForm(),
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        body: const WifiConfigForm(),
+      ),
     );
   }
 }

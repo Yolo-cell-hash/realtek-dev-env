@@ -15,9 +15,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     final theme = Theme.of(context);
 
 
-    return Scaffold(
-      backgroundColor:theme.scaffoldBackgroundColor,
-      body:LoginForm()
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor:theme.scaffoldBackgroundColor,
+        body:LoginForm()
+      ),
     );
   }
 }

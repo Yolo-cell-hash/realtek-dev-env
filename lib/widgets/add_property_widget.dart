@@ -2,31 +2,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+import 'package:vdb_realtek/screens/wifi_configuration_screen.dart';
 import 'package:vdb_realtek/providers/user_provider.dart';
-import 'package:vdb_realtek/screens/devices_screen.dart';
 
-class WifiConfigForm extends StatefulWidget {
-  const WifiConfigForm({super.key});
+
+class Addpropertywidget extends StatefulWidget {
+  const Addpropertywidget({super.key});
 
   @override
-  State<WifiConfigForm> createState() => _WifiConfigFormState();
+  State<Addpropertywidget> createState() => _AddpropertywidgetState();
 }
 
-class _WifiConfigFormState extends State<WifiConfigForm> {
+class _AddpropertywidgetState extends State<Addpropertywidget> {
+
   final _formKey = GlobalKey<FormState>();
-  final _wifiSSIDController = TextEditingController();
-  final _wifiPasswordController = TextEditingController();
+  final _propertyIdController = TextEditingController();
+  final _deviceNameController = TextEditingController();
 
   @override
   void dispose() {
-    _wifiSSIDController.dispose();
-    _wifiPasswordController.dispose();
+    _deviceNameController.dispose();
+    _propertyIdController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
     return Form(
       key: _formKey,
       child: Column(
@@ -54,15 +57,15 @@ class _WifiConfigFormState extends State<WifiConfigForm> {
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       style: const TextStyle(color: Colors.black),
-                      controller: _wifiSSIDController,
+                      controller: _propertyIdController,
                       keyboardType: TextInputType.text,
                       inputFormatters: [LengthLimitingTextInputFormatter(30)],
                       decoration: InputDecoration(
-                        labelText: 'WiFi SSID',
-                        hintText: 'Enter your WiFi SSID',
+                        labelText: 'Property Name',
+                        hintText: 'Enter your Property Name',
                         labelStyle: const TextStyle(color: Colors.black),
                         prefixIcon:
-                        Icon(Icons.wifi, color: theme.colorScheme.primary),
+                        Icon(Icons.home_outlined, color: theme.colorScheme.primary),
                         border: const OutlineInputBorder(),
                       ),
                     ),
@@ -72,16 +75,15 @@ class _WifiConfigFormState extends State<WifiConfigForm> {
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       style: const TextStyle(color: Colors.black),
-                      controller: _wifiPasswordController,
-                      obscureText: true,
+                      controller: _deviceNameController,
                       keyboardType: TextInputType.text,
                       inputFormatters: [LengthLimitingTextInputFormatter(30)],
                       decoration: InputDecoration(
-                        labelText: 'Password',
-                        hintText: 'Enter your WiFi Password',
+                        labelText: 'Device Name',
+                        hintText: 'Enter your Device Name',
                         labelStyle: const TextStyle(color: Colors.black),
-                        prefixIcon: Icon(Icons.lock_outline,
-                            color: theme.colorScheme.primary),
+                        prefixIcon:
+                        Icon(Icons.drive_file_rename_outline, color: theme.colorScheme.primary),
                         border: const OutlineInputBorder(),
                       ),
                     ),
@@ -91,26 +93,25 @@ class _WifiConfigFormState extends State<WifiConfigForm> {
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('Device Configuration Successful',
-                                style: TextStyle(color: Colors.white, fontFamily: "GEG")),
-                            backgroundColor: theme.colorScheme.primary,
-                          ),
-                        );
-
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const DevicesScreen()),
-                        );
+                        if (_formKey.currentState!.validate()) {
+                          context.read<UserProvider>().setPropertyName(
+                            _propertyIdController.text.trim(),
+                          );
+                          context.read<UserProvider>().setDeviceName(
+                            _deviceNameController.text.trim(),
+                          );
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const WifiConfigurationScreen()),
+                          );
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.colorScheme.primary,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                       ),
                       child: const Text(
-                        'Finish Device Onboarding',
+                        'Proceed to WiFi Configuration',
                         style: TextStyle(fontSize: 16, color: Colors.white),
                       ),
                     ),

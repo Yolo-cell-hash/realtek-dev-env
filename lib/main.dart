@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 
 import 'package:vdb_realtek/providers/user_provider.dart';
 import 'package:vdb_realtek/screens/splash_screen.dart';
+import 'package:vdb_realtek/screens/devices_screen.dart';
+import 'package:vdb_realtek/screens/wifi_configuration_screen.dart';
+import 'package:vdb_realtek/screens/property_configuration_screen.dart';
+import 'package:vdb_realtek/screens/onboarding_screen.dart';
+import 'package:vdb_realtek/screens/device_landing_screen.dart';
+
 
 
 void main() {
@@ -107,8 +115,16 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
 
-      home: const SplashScreen(),
+      initialRoute: '/',
       debugShowCheckedModeBanner: false,
+      routes: {
+        '/': (context) => const SplashScreen(),
+        '/devices': (context) => const DevicesScreen(),
+        '/wifi': (context) => const WifiConfigurationScreen(),
+        '/property': (context) => const PropertyConfigurationScreen(),
+        '/onboarding': (context) => const OnboardingScreen(),
+        '/deviceLanding': (context) => const DeviceLandingScreen(),
+      },
     );
   }
 }
