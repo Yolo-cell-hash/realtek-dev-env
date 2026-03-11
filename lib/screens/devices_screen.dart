@@ -15,7 +15,7 @@ class _DevicesScreenState extends State<DevicesScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final propertyName = context.watch<UserProvider>().propertyName ?? 'Your Devices';
+    final propertyName = context.watch<UserProvider>().propertyName ?? 'Your Property';
 
     return SafeArea(
       child: Scaffold(

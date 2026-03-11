@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:vdb_realtek/providers/user_provider.dart';
 import 'package:vdb_realtek/screens/splash_screen.dart';
 import 'package:vdb_realtek/screens/devices_screen.dart';
+import 'package:vdb_realtek/screens/vdb_landing_screen.dart';
 import 'package:vdb_realtek/screens/wifi_configuration_screen.dart';
 import 'package:vdb_realtek/screens/property_configuration_screen.dart';
 import 'package:vdb_realtek/screens/onboarding_screen.dart';
@@ -66,11 +67,11 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme.light(
           primary: const Color(0xFF810055),
           secondary: const Color(0xFFF1F2ED),
-          surface: const Color(0xFFD9D9D9),
+          surface: const Color(0xFFF1F2ED),
           error: const Color(0xFFFF0000),
           onPrimary: const Color(0xFF810055),
           onSecondary: const Color(0xFFF1F2ED),
-          onSurface: const Color(0xFFD9D9D9),
+          onSurface: const Color(0xFF000000),
           onError: const Color(0xFFFF0000),
         ),
       ),
@@ -126,6 +127,7 @@ class _MyAppState extends State<MyApp> {
         '/property': (context) => const PropertyConfigurationScreen(),
         '/onboarding': (context) => const OnboardingScreen(),
         '/deviceLanding': (context) => const DeviceLandingScreen(),
+        '/vdbLanding':(context) => const VdbLandingScreen(),
       },
     );
   }

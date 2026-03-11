@@ -100,10 +100,7 @@ class _WifiConfigFormState extends State<WifiConfigForm> {
                           ),
                         );
 
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => const DevicesScreen()),
-                        );
+                        Navigator.pushNamed(context, '/vdbLanding');
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: theme.colorScheme.primary,

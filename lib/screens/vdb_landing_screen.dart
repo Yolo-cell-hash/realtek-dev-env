@@ -1,0 +1,94 @@
+import 'package:flutter/material.dart';
+import 'package:vdb_realtek/widgets/bottom_nav.dart';
+import 'package:vdb_realtek/widgets/device_status.dart';
+import 'package:vdb_realtek/widgets/live_feed.dart';
+import 'package:vdb_realtek/widgets/recent_activity.dart';
+
+class VdbLandingScreen extends StatefulWidget {
+  const VdbLandingScreen({super.key});
+
+  @override
+  State<VdbLandingScreen> createState() => _VdbLandingScreenState();
+}
+
+class _VdbLandingScreenState extends State<VdbLandingScreen> {
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Scaffold(
+      backgroundColor: theme.colorScheme.surface,
+      appBar: _buildAppBar(),
+      body: _buildBody(),
+      bottomNavigationBar: BottomNav(),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    final theme = Theme.of(context);
+    return AppBar(
+      backgroundColor: theme.colorScheme.surface.withOpacity(0.85),
+      elevation: 0,
+      scrolledUnderElevation: 0,
+      surfaceTintColor: Colors.transparent,
+      shape: const Border(
+        bottom: BorderSide(color: Color(0x1A810055), width: 1),
+      ),
+      titleSpacing: 0,
+      title: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(6),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Icon(Icons.shield_outlined,
+                color: Colors.white, size: 24),
+          ),
+          const SizedBox(width: 8),
+          const Text(
+            'VDB Secure',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0F172A),
+              letterSpacing: -0.5,
+            ),
+          ),
+        ],
+      ),actions: [
+        IconButton(
+          icon: const Icon(Icons.notifications_outlined,
+              color: Color(0xFF475569)),
+          onPressed: () {},
+        ),
+        Padding(
+          padding: const EdgeInsets.only(right: 12),
+          child: CircleAvatar(
+            radius: 20,
+            backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
+            backgroundImage: const AssetImage(
+              'images/user-profile.png',
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBody() {
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          LiveFeed(),
+          DeviceStatus(),
+          RecentActivity(),
+          const SizedBox(height: 24),
+        ],
+      ),
+    );
+  }
+}

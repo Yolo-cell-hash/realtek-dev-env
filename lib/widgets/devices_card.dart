@@ -16,22 +16,37 @@ class _DevicesCardState extends State<DevicesCard> {
     final theme = Theme.of(context);
     final deviceName = context.watch<UserProvider>().deviceName ?? 'Device';
 
-
     return GestureDetector(
-      onTap: (){
+      onTap: () {
         Navigator.pushNamed(context, '/deviceLanding');
-
       },
       child: Card(
-        color: theme.colorScheme.primary,
-        elevation: 4.0,
+        color: theme.colorScheme.secondary,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          side: BorderSide(
+            color: theme.colorScheme.primary.withOpacity(0.3),
+            width: 2.0,
+          ),
+        ),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Icon(Icons.wifi, size: 30.0),
-            SizedBox(width: 5.0),
-            Text(deviceName.toString(),),
+            Container(
+              padding: EdgeInsets.all(10.0),
+              child: Text(
+                deviceName.toString(),
+                style: TextStyle(
+                  color: theme.colorScheme.surface,
+                  fontFamily: 'GEG-Bold',
+                  fontSize: 20.0,
+                ),
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios_outlined,
+              color: theme.colorScheme.primary,)
           ],
         ),
       ),
