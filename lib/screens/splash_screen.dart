@@ -2,7 +2,7 @@ import 'package:another_flutter_splash_screen/another_flutter_splash_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:vdb_realtek/screens/onboarding_screen.dart';
+import 'package:vdb_realtek/screens/login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
         height: 100,
       ),
       onAnimationEnd: () => debugPrint("On Fade Ins End"),
-      nextScreen: OnboardingScreen(),
+      nextScreen: LoginScreen(),
     );
   }
 }

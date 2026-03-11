@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import 'package:vdb_realtek/providers/user_provider.dart';
-import 'package:vdb_realtek/screens/property_onboarding.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -54,10 +53,10 @@ class _LoginFormState extends State<LoginForm> {
           ),
         );
         print("OTP Verified Successfully");
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const PropertyOnboarding()),
-        );
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(builder: (context) => const PropertyOnboarding()),
+        // );
       }
     }
 

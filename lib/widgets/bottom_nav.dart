@@ -17,8 +17,8 @@ class _BottomNavState extends State<BottomNav> {
 
     final navItems = [
       {'icon': Icons.home_rounded, 'label': 'Home'},
+      {'icon': Icons.videocam_rounded, 'label': 'Live'},
       {'icon': Icons.history_rounded, 'label': 'Events'},
-      {'icon': Icons.videocam_rounded, 'label': 'Devices'},
       {'icon': Icons.settings_outlined, 'label': 'Settings'},
     ];
 
