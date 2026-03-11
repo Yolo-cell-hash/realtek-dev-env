@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:vdb_realtek/widgets/bottom_nav.dart';
 import 'package:vdb_realtek/widgets/device_status.dart';
 import 'package:vdb_realtek/widgets/live_feed.dart';
 import 'package:vdb_realtek/widgets/recent_activity.dart';
+
+import 'package:vdb_realtek/providers/user_provider.dart';
 
 class VdbLandingScreen extends StatefulWidget {
   const VdbLandingScreen({super.key});
@@ -26,6 +29,7 @@ class _VdbLandingScreenState extends State<VdbLandingScreen> {
   }
 
   PreferredSizeWidget _buildAppBar() {
+    final propertyName = context.watch<UserProvider>().propertyName ?? 'Your House';
     final theme = Theme.of(context);
     return AppBar(
       backgroundColor: theme.colorScheme.surface.withOpacity(0.85),
@@ -48,9 +52,9 @@ class _VdbLandingScreenState extends State<VdbLandingScreen> {
                 color: Colors.white, size: 24),
           ),
           const SizedBox(width: 8),
-          const Text(
-            'VDB Secure',
-            style: TextStyle(
+          Text(
+            propertyName,
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
               color: Color(0xFF0F172A),

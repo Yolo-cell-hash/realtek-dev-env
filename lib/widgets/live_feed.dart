@@ -1,6 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:vdb_realtek/widgets/quick_action_button.dart';
 
+import 'dart:convert';
+import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_webrtc/flutter_webrtc.dart';
+import 'package:flutter_kinesis_video_webrtc/flutter_kinesis_video_webrtc.dart';
+
 class LiveFeed extends StatefulWidget {
   const LiveFeed({super.key});
 
@@ -8,15 +15,33 @@ class LiveFeed extends StatefulWidget {
   State<LiveFeed> createState() => _LiveFeedState();
 }
 
-class _LiveFeedState extends State<LiveFeed> with SingleTickerProviderStateMixin {
-
+class _LiveFeedState extends State<LiveFeed>
+    with SingleTickerProviderStateMixin {
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
 
+  final RTCVideoRenderer _rtcVideoRenderer = RTCVideoRenderer();
+  RTCPeerConnection? _rtcPeerConnection;
+  late SignalingClient _signalingClient;
+  bool _isLoading = false;
+  bool _feedActive = false;
+  bool sendAudio = false;
+  bool sendVideo = false;
+  MediaStream? _localStream;
+  SimpleWebSocket? _webSocket;
+  late Timer _clockTimer;
+  String currentTime = '';
 
   @override
   void initState() {
     super.initState();
+    currentTime = _getISTTime();
+    _clockTimer = Timer.periodic(const Duration(seconds: 1), (_) {
+      setState(() {
+        currentTime = _getISTTime();
+      });
+    });
+    _rtcVideoRenderer.initialize();
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 900),
@@ -28,8 +53,166 @@ class _LiveFeedState extends State<LiveFeed> with SingleTickerProviderStateMixin
 
   @override
   void dispose() {
+    _clockTimer.cancel();
     _pulseController.dispose();
+    _rtcVideoRenderer.dispose();
+    _rtcPeerConnection?.dispose();
+    _localStream?.dispose();
     super.dispose();
+  }
+
+  String _getISTTime() {
+    final utc = DateTime.now().toUtc();
+    final ist = utc.add(const Duration(hours: 5, minutes: 30));
+    int hour = ist.hour;
+    final String period = hour >= 12 ? 'PM' : 'AM';
+    hour = hour % 12;
+    if (hour == 0) hour = 12;
+    final String hh = hour.toString().padLeft(2, '0');
+    final String mm = ist.minute.toString().padLeft(2, '0');
+    final String ss = ist.second.toString().padLeft(2, '0');
+    return '$hh:$mm:$ss $period';
+  }
+
+  Future<void> _startFeed() async {
+    setState(() {
+      _isLoading = true;
+      _feedActive = true;
+    });
+    await _peerConnection();
+  }
+
+  Future<void> _stopFeed() async {
+    // Close WebSocket
+    await _webSocket?.close();
+    _webSocket = null;
+
+    // Stop all local tracks
+    _localStream?.getTracks().forEach((track) => track.stop());
+    await _localStream?.dispose();
+    _localStream = null;
+
+    // Close peer connection
+    await _rtcPeerConnection?.close();
+    _rtcPeerConnection = null;
+
+    // Clear the video renderer
+    _rtcVideoRenderer.srcObject = null;
+
+    setState(() {
+      _feedActive = false;
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _peerConnection() async {
+    _signalingClient = SignalingClient(
+      channelName: dotenv.env['KVS_CHANNEL_NAME']!,
+      accessKey: dotenv.env['AWS_ACCESS_KEY']!,
+      secretKey: dotenv.env['AWS_SECRET_KEY']!,
+      region: dotenv.env['AWS_REGION']!,
+    );
+
+    await _signalingClient.init();
+
+    _rtcPeerConnection = await createPeerConnection({
+      'iceServers': _signalingClient.iceServers,
+      'iceTransportPolicy': 'all',
+    });
+
+    _rtcPeerConnection!.onTrack = (event) {
+      setState(() {
+        _rtcVideoRenderer.srcObject = event.streams[0];
+        _isLoading = false;
+      });
+    };
+
+    if (sendAudio || sendVideo) {
+      _localStream = await navigator.mediaDevices.getUserMedia({
+        'audio': sendAudio,
+        'video': sendVideo,
+      });
+
+      _localStream!.getTracks().forEach((track) {
+        _rtcPeerConnection!.addTrack(track, _localStream!);
+      });
+    }
+
+    _webSocket = SimpleWebSocket(
+      _signalingClient.domain ?? '',
+      _signalingClient.signedQueryParams ?? <String, dynamic>{},
+    );
+
+    _webSocket!.onMessage = (data) async {
+      if (data != '') {
+        var objectOfData = jsonDecode(data);
+        if (kDebugMode) {
+          print(
+            "-------------------- receiving ${objectOfData['messageType']} --------------------",
+          );
+        }
+
+        if (objectOfData['messageType'] == "SDP_ANSWER") {
+          var decodedAns = jsonDecode(
+            utf8.decode(base64.decode(objectOfData['messagePayload'])),
+          );
+          await _rtcPeerConnection?.setRemoteDescription(
+            RTCSessionDescription(decodedAns["sdp"], decodedAns["type"]),
+          );
+        } else if (objectOfData['messageType'] == "ICE_CANDIDATE") {
+          var decodedCandidate = jsonDecode(
+            utf8.decode(base64.decode(objectOfData['messagePayload'])),
+          );
+          await _rtcPeerConnection?.addCandidate(
+            RTCIceCandidate(
+              decodedCandidate["candidate"],
+              decodedCandidate["sdpMid"],
+              decodedCandidate["sdpMLineIndex"],
+            ),
+          );
+        }
+      }
+    };
+
+    _webSocket!.onOpen = () async {
+      if (kDebugMode) {
+        print("-------------------- socket opened --------------------");
+        print("-------------------- sending 'SDP_OFFER' --------------------");
+      }
+
+      RTCSessionDescription offer = await _rtcPeerConnection!.createOffer({
+        'mandatory': {'OfferToReceiveAudio': true, 'OfferToReceiveVideo': true},
+        'optional': [],
+      });
+
+      await _rtcPeerConnection!.setLocalDescription(offer);
+      RTCSessionDescription? localDescription =
+      await _rtcPeerConnection?.getLocalDescription();
+
+      var request = {};
+      request["action"] = "SDP_OFFER";
+      request["messagePayload"] = base64.encode(
+        jsonEncode(localDescription?.toMap()).codeUnits,
+      );
+      _webSocket!.send(jsonEncode(request));
+    };
+
+    _rtcPeerConnection!.onIceCandidate = (dynamic candidate) {
+      if (kDebugMode) {
+        print(
+          "-------------------- sending 'ICE_CANDIDATE' --------------------",
+        );
+      }
+
+      var request = {};
+      request["action"] = "ICE_CANDIDATE";
+      request["messagePayload"] = base64.encode(
+        jsonEncode(candidate.toMap()).codeUnits,
+      );
+      _webSocket!.send(jsonEncode(request));
+    };
+
+    await _webSocket!.connect();
   }
 
   @override
@@ -47,8 +230,10 @@ class _LiveFeedState extends State<LiveFeed> with SingleTickerProviderStateMixin
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               Container(
-                padding:
-                const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFFE4E4),
                   borderRadius: BorderRadius.circular(999),
@@ -89,7 +274,6 @@ class _LiveFeedState extends State<LiveFeed> with SingleTickerProviderStateMixin
     );
   }
 
-
   Widget _buildVideoPlayer() {
     final theme = Theme.of(context);
     return ClipRRect(
@@ -99,9 +283,12 @@ class _LiveFeedState extends State<LiveFeed> with SingleTickerProviderStateMixin
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.asset(
-              'images/bg_feed.png',
-              fit: BoxFit.cover,
+            // Show RTCVideoView only when feed is active and not loading
+            (!_feedActive || _isLoading)
+                ? Image.asset('images/bg_feed.png', fit: BoxFit.cover)
+                : RTCVideoView(
+              _rtcVideoRenderer,
+              objectFit: RTCVideoViewObjectFit.RTCVideoViewObjectFitCover,
             ),
             Container(
               decoration: const BoxDecoration(
@@ -112,7 +299,8 @@ class _LiveFeedState extends State<LiveFeed> with SingleTickerProviderStateMixin
                     Color(0x33000000),
                     Colors.transparent,
                     Color(0x99000000),
-                  ],stops: [0.0, 0.4, 1.0],
+                  ],
+                  stops: [0.0, 0.4, 1.0],
                 ),
               ),
             ),
@@ -127,73 +315,49 @@ class _LiveFeedState extends State<LiveFeed> with SingleTickerProviderStateMixin
                       const Text(
                         'Front Porch • 1080p',
                         style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            shadows: [
-                              Shadow(blurRadius: 4, color: Colors.black38)
-                            ]),
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          shadows: [
+                            Shadow(blurRadius: 4, color: Colors.black38),
+                          ],
+                        ),
                       ),
-                      const Text(
-                        '12:45:08 PM',
-                        style: TextStyle(
-                            color: Color(0xCCFFFFFF),
-                            fontSize: 11,
-                            fontFeatures: [
-                              FontFeature.tabularFigures()
-                            ]),
+                      Text(
+                        currentTime,
+                        style: const TextStyle(
+                          color: Color(0xCCFFFFFF),
+                          fontSize: 11,
+                          fontFeatures: [FontFeature.tabularFigures()],
+                        ),
                       ),
                     ],
                   ),
-                  Center(
-                    child: GestureDetector(
-                      onTap: () {},
-                      child: Container(
-                        width: 56,
-                        height: 56,
-                        decoration:  BoxDecoration(
-                          color: theme.colorScheme.primary,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.black26,
-                                blurRadius: 8,
-                                offset: Offset(0, 4))
-                          ],
-                        ),
-                        child: const Icon(Icons.play_arrow_rounded,
-                            color: Colors.white, size: 30),
-                      ),
-                    ),
-                  ),
+                  // Show spinner while connecting
+                  if (_isLoading)
+                    const CircularProgressIndicator(color: Colors.white)
+                  else
+                    const SizedBox.shrink(),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Expanded(
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(999),
-                          child: Container(
-                            height: 4,
-                            color: Colors.white30,
-                            child: FractionallySizedBox(
-                              alignment: Alignment.centerLeft,
-                              widthFactor: 1 / 3,
-                              child: Container(color: theme.colorScheme.primary),
-                            ),
-                          ),
-                        ),
+                      const SizedBox(width: 12),
+                      const Icon(
+                        Icons.volume_up_outlined,
+                        color: Colors.white,
+                        size: 22,
                       ),
                       const SizedBox(width: 12),
-                      const Icon(Icons.fullscreen,
-                          color: Colors.white, size: 22),
-                      const SizedBox(width: 12),
-                      const Icon(Icons.volume_up_outlined,
-                          color: Colors.white, size: 22),
+                      const Icon(
+                        Icons.fullscreen,
+                        color: Colors.white,
+                        size: 22,
+                      ),
                     ],
                   ),
                 ],
               ),
-            ),
-          ],
+            ),],
         ),
       ),
     );
@@ -203,10 +367,15 @@ class _LiveFeedState extends State<LiveFeed> with SingleTickerProviderStateMixin
     final theme = Theme.of(context);
 
     final actions = [
-      {'icon': Icons.mic_outlined, 'label': 'Talk', 'active': false},
-      {'icon': Icons.camera_alt_outlined, 'label': 'Snapshot', 'active': false},
-      {'icon': Icons.flashlight_on_outlined, 'label': 'Light', 'active': false},
-      {'icon': Icons.shield_outlined, 'label': 'Armed', 'active': true},
+      {'icon': Icons.mic_outlined, 'label': 'Talk', 'active': false, 'onTap': null},
+      {'icon': Icons.camera_alt_outlined, 'label': 'Snapshot', 'active': false, 'onTap': null},
+      {'icon': Icons.fiber_manual_record, 'label': 'Record', 'active': false, 'onTap': null},
+      {
+        'icon': _feedActive ? Icons.stop_circle_outlined : Icons.play_arrow,
+        'label': _feedActive ? 'Stop Feed' : 'View Feed',
+        'active': _feedActive,
+        'onTap': _feedActive ? _stopFeed : _startFeed,
+      },
     ];
 
     return Row(
@@ -214,12 +383,13 @@ class _LiveFeedState extends State<LiveFeed> with SingleTickerProviderStateMixin
         final isActive = action['active'] as bool;
         return Expanded(
           child: Padding(
-            padding:  EdgeInsets.symmetric(horizontal: 3),
+            padding: const EdgeInsets.symmetric(horizontal: 3),
             child: QuickActionButton(
               icon: action['icon'] as IconData,
               label: action['label'] as String,
               isActive: isActive,
               primaryColor: theme.colorScheme.primary,
+              onTap: action['onTap'] as VoidCallback?,
             ),
           ),
         );

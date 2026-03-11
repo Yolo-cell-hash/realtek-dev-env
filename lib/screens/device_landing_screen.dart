@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
+
 import 'dart:convert';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:flutter_kinesis_video_webrtc/flutter_kinesis_video_webrtc.dart';
@@ -27,6 +29,7 @@ class _DeviceLandingScreenState extends State<DeviceLandingScreen> {
   bool _sliderCompleted = false;
   MediaStream? _localStream;
   Timer? _resetTimer;
+
   @override
   void initState() {
     super.initState();
