@@ -43,9 +43,9 @@ class _VdbLandingScreenState extends State<VdbLandingScreen> {
       elevation: 0,
       scrolledUnderElevation: 0,
       leading: IconButton(
-        icon: const Icon(
+        icon:  Icon(
           Icons.chevron_left,
-          color: Color(0xFF475569),
+          color: theme.colorScheme.primary,
           size: 28,
         ),
         onPressed: () {
@@ -82,8 +82,8 @@ class _VdbLandingScreenState extends State<VdbLandingScreen> {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.notifications_outlined,
-              color: Color(0xFF475569)),
+          icon:  Icon(Icons.notifications_outlined,
+              color:theme.colorScheme.primary),
           onPressed: () {},
         ),
         Padding(

@@ -51,7 +51,6 @@ class _SettingsState extends State<Settings> {
     );
   }
 
-  // ─── Device Status ───────────────────────────────────────────────────────────
 
   Widget _buildDeviceStatus() {
     final theme = Theme.of(context);
@@ -219,8 +218,8 @@ class _SettingsState extends State<Settings> {
       elevation: 0,
       scrolledUnderElevation: 0,
       leading: IconButton(
-        icon: const Icon(Icons.chevron_left, color: Color(0xFF475569), size: 28),
-        onPressed: () => Navigator.of(context).pop(),
+        icon:  Icon(Icons.chevron_left, color: theme.colorScheme.primary, size: 28),
+        onPressed: () => Navigator.pushReplacementNamed(context, '/vdbLanding'),
       ),
       surfaceTintColor: Colors.transparent,
       shape: const Border(
@@ -237,7 +236,7 @@ class _SettingsState extends State<Settings> {
       ),
       actions: [
         IconButton(
-          icon: const Icon(Icons.more_horiz, color: Color(0xFF475569)),
+          icon:  Icon(Icons.more_horiz, color: theme.colorScheme.primary),
           onPressed: () {},
         ),
       ],
