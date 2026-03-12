@@ -11,8 +11,9 @@ import 'package:vdb_realtek/screens/devices_screen.dart';
 import 'package:vdb_realtek/screens/vdb_landing_screen.dart';
 import 'package:vdb_realtek/screens/device_landing_screen.dart';
 import 'package:vdb_realtek/screens/login_screen.dart';
-import 'package:vdb_realtek/screens/device_landing_screen.dart';
+import 'package:vdb_realtek/screens/settings.dart';
 import 'package:vdb_realtek/screens/wifi_onboarding_screen.dart';
+import 'package:vdb_realtek/screens/live_video_screen.dart';
 
 
 void main() async{
@@ -130,6 +131,8 @@ class _MyAppState extends State<MyApp> {
         '/propertyOnboarding':(context) => PropertyOnboardingScreen(),
         '/deviceOnboarding':(context) => DeviceOnboardingScreen(),
         '/wifi0nboarding':(context) => WifiOnboardingScreen(),
+        '/live':(context)=> LiveVideoScreen(),
+        '/settings':(context) => Settings(),
       },
     );
   }

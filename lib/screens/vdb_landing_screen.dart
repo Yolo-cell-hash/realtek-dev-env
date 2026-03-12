@@ -24,7 +24,14 @@ class _VdbLandingScreenState extends State<VdbLandingScreen> {
       backgroundColor: theme.colorScheme.surface,
       appBar: _buildAppBar(),
       body: _buildBody(),
-      bottomNavigationBar: BottomNav(),
+      bottomNavigationBar: BottomNav(currentIndex: 0, onTap: (index) {
+        switch (index) {
+          case 0: break; // Already on Home
+          case 1: Navigator.pushReplacementNamed(context, '/live'); break;
+          case 2: Navigator.pushReplacementNamed(context, '/events'); break;
+          case 3: Navigator.pushReplacementNamed(context, '/settings'); break;
+        }
+      }), // 0 = Home tab
     );
   }
 
@@ -53,7 +60,7 @@ class _VdbLandingScreenState extends State<VdbLandingScreen> {
       title: Row(
         children: [
           Container(
-            padding: const EdgeInsets.only(right: 6,top: 6.0, bottom: 6.0, left: 6.0),
+            padding: const EdgeInsets.only(right: 6, top: 6.0, bottom: 6.0, left: 6.0),
             decoration: BoxDecoration(
               color: theme.colorScheme.primary,
               borderRadius: BorderRadius.circular(8),
@@ -72,7 +79,8 @@ class _VdbLandingScreenState extends State<VdbLandingScreen> {
             ),
           ),
         ],
-      ),actions: [
+      ),
+      actions: [
         IconButton(
           icon: const Icon(Icons.notifications_outlined,
               color: Color(0xFF475569)),

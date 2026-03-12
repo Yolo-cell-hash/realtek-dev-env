@@ -57,7 +57,7 @@ class _DeviceOnboardingScreenState extends State<DeviceOnboardingScreen>
               ),
             ),
           ),
-          BottomNav(),
+          // BottomNav(),
         ],
       ),
     );

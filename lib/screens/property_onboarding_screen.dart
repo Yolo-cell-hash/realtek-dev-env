@@ -76,9 +76,10 @@ class _PropertyOnboardingScreenState extends State<PropertyOnboardingScreen> {
           ),
         ],
       ),
-      bottomNavigationBar: BottomNav(),
+      // bottomNavigationBar: BottomNav(),
     );
   }
+
 
   Widget _buildHeader(BuildContext context) {
     return Container(

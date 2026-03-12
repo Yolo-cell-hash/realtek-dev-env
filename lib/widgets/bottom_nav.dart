@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 
-class BottomNav extends StatefulWidget {
-  const BottomNav({super.key});
+class BottomNav extends StatelessWidget {
+  final int currentIndex;
+  final ValueChanged<int> onTap;
 
-  @override
-  State<BottomNav> createState() => _BottomNavState();
-}
+  const BottomNav({
+    super.key,
+    required this.currentIndex,
+    required this.onTap,
+  });
 
-class _BottomNavState extends State<BottomNav> {
   @override
   Widget build(BuildContext context) {
-
-    int currentIndex = 0;
-
     final theme = Theme.of(context);
 
     final navItems = [
@@ -42,11 +41,10 @@ class _BottomNavState extends State<BottomNav> {
             children: List.generate(navItems.length, (i) {
               final isSelected = currentIndex == i;
               return GestureDetector(
-                onTap: () => setState(() => currentIndex = i),
+                onTap: () => onTap(i),
                 behavior: HitTestBehavior.opaque,
                 child: Padding(
-                  padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
