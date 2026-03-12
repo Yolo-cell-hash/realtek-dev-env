@@ -35,6 +35,16 @@ class _VdbLandingScreenState extends State<VdbLandingScreen> {
       backgroundColor: theme.colorScheme.surface.withOpacity(0.85),
       elevation: 0,
       scrolledUnderElevation: 0,
+      leading: IconButton(
+        icon: const Icon(
+          Icons.chevron_left,
+          color: Color(0xFF475569),
+          size: 28,
+        ),
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+      ),
       surfaceTintColor: Colors.transparent,
       shape: const Border(
         bottom: BorderSide(color: Color(0x1A810055), width: 1),
@@ -43,7 +53,7 @@ class _VdbLandingScreenState extends State<VdbLandingScreen> {
       title: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(6),
+            padding: const EdgeInsets.only(right: 6,top: 6.0, bottom: 6.0, left: 6.0),
             decoration: BoxDecoration(
               color: theme.colorScheme.primary,
               borderRadius: BorderRadius.circular(8),

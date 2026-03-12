@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:vdb_realtek/widgets/bottom_nav.dart';
+import 'package:vdb_realtek/providers/user_provider.dart';
+
 class PropertyOnboardingScreen extends StatefulWidget {
   const PropertyOnboardingScreen({super.key});
 
@@ -25,9 +28,20 @@ class _PropertyOnboardingScreenState extends State<PropertyOnboardingScreen> {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    _nameController.addListener(_onNameChanged);
+  }
+
+  @override
   void dispose() {
+    _nameController.removeListener(_onNameChanged);
     _nameController.dispose();
     super.dispose();
+  }
+
+  void _onNameChanged() {
+    context.read<UserProvider>().setPropertyName(_nameController.text);
   }
 
   @override
