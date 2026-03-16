@@ -26,7 +26,7 @@ class _VdbLandingScreenState extends State<VdbLandingScreen> {
       body: _buildBody(),
       bottomNavigationBar: BottomNav(currentIndex: 0, onTap: (index) {
         switch (index) {
-          case 0: break; // Already on Home
+          case 0: break;
           case 1: Navigator.pushReplacementNamed(context, '/live'); break;
           case 2: Navigator.pushReplacementNamed(context, '/events'); break;
           case 3: Navigator.pushReplacementNamed(context, '/settings'); break;

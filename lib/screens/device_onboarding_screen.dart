@@ -133,27 +133,32 @@ class _DeviceOnboardingScreenState extends State<DeviceOnboardingScreen>
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Connect your VDB',
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
+          GestureDetector(
+            onTap: (){
+              Navigator.pushNamed(context, '/vdbLanding');
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Connect your VDB',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Ensure your phone is connected to Wi-Fi and the device is powered on.',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.white.withOpacity(0.8),
-                  height: 1.5,
+                const SizedBox(height: 8),
+                Text(
+                  'Ensure your phone is connected to Wi-Fi and the device is powered on.',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: Colors.white.withOpacity(0.8),
+                    height: 1.5,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
           Positioned(
             top: -30,

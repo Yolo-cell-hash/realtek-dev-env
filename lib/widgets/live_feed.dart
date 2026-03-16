@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:vdb_realtek/widgets/quick_action_button.dart';
+import 'package:provider/provider.dart';
+import 'package:vdb_realtek/services/mqtt_service.dart';
 
 import 'dart:convert';
 import 'dart:async';
@@ -79,24 +81,20 @@ class _LiveFeedState extends State<LiveFeed>
       _isLoading = true;
       _feedActive = true;
     });
+    context.read<MqttService>().sendStart();
     await _peerConnection();
   }
 
   Future<void> _stopFeed() async {
-    // Close WebSocket
+    context.read<MqttService>().sendStop();
+
     await _webSocket?.close();
     _webSocket = null;
-
-    // Stop all local tracks
-    _localStream?.getTracks().forEach((track) => track.stop());
+    _localStream?.getTracks().forEach((t) => t.stop());
     await _localStream?.dispose();
     _localStream = null;
-
-    // Close peer connection
     await _rtcPeerConnection?.close();
     _rtcPeerConnection = null;
-
-    // Clear the video renderer
     _rtcVideoRenderer.srcObject = null;
 
     setState(() {
@@ -104,6 +102,7 @@ class _LiveFeedState extends State<LiveFeed>
       _isLoading = false;
     });
   }
+
 
   Future<void> _peerConnection() async {
     _signalingClient = SignalingClient(
@@ -365,16 +364,17 @@ class _LiveFeedState extends State<LiveFeed>
 
   Widget _buildQuickActions() {
     final theme = Theme.of(context);
+    final mqttFeedActive = context.watch<MqttService>().feedActive;
 
     final actions = [
       {'icon': Icons.mic_outlined, 'label': 'Talk', 'active': false, 'onTap': null},
-      {'icon': Icons.camera_alt_outlined, 'label': 'Snapshot', 'active': false, 'onTap': null},
+      {'icon': Icons.video_camera_back_outlined, 'label': 'Surveillance', 'active': false, 'onTap': null},
       {'icon': Icons.fiber_manual_record, 'label': 'Record', 'active': false, 'onTap': null},
       {
-        'icon': _feedActive ? Icons.stop_circle_outlined : Icons.play_arrow,
-        'label': _feedActive ? 'Stop Feed' : 'View Feed',
-        'active': _feedActive,
-        'onTap': _feedActive ? _stopFeed : _startFeed,
+        'icon': mqttFeedActive ? Icons.stop_circle_outlined : Icons.play_arrow,
+        'label': mqttFeedActive ? 'Stop Feed' : 'View Feed',
+        'active': mqttFeedActive,
+        'onTap': mqttFeedActive ? _stopFeed : _startFeed,
       },
     ];
 

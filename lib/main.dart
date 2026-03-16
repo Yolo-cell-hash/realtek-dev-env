@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
+import 'package:vdb_realtek/services/mqtt_service.dart';
 import 'package:vdb_realtek/providers/user_provider.dart';
 import 'package:vdb_realtek/screens/device_onboarding_screen.dart';
 import 'package:vdb_realtek/screens/property_onboarding_screen.dart';
@@ -15,14 +15,24 @@ import 'package:vdb_realtek/screens/settings.dart';
 import 'package:vdb_realtek/screens/wifi_onboarding_screen.dart';
 import 'package:vdb_realtek/screens/live_video_screen.dart';
 
-
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: ".env");
-  runApp(ChangeNotifierProvider(
-    create: (_) => UserProvider(),
-    child: const MyApp(),
-  ));
+  await MqttService.instance.connect();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => UserProvider(),
+        ),
+        ChangeNotifierProvider<MqttService>.value(
+          value: MqttService.instance,
+        ),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
@@ -33,8 +43,6 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -60,11 +68,8 @@ class _MyAppState extends State<MyApp> {
           centerTitle: true,
         ),
 
-
         // Icon theme
-        iconTheme: const IconThemeData(
-          color: Color(0xFF810055),
-        ),
+        iconTheme: const IconThemeData(color: Color(0xFF810055)),
 
         colorScheme: ColorScheme.light(
           primary: const Color(0xFF810055),
@@ -102,10 +107,7 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
 
-        iconTheme: const IconThemeData(
-          color: Colors.white,
-
-        ),
+        iconTheme: const IconThemeData(color: Colors.white),
 
         // Color scheme
         colorScheme: const ColorScheme.dark(
@@ -126,13 +128,13 @@ class _MyAppState extends State<MyApp> {
         '/': (context) => const SplashScreen(),
         '/devices': (context) => const DevicesScreen(),
         '/deviceLanding': (context) => const DeviceLandingScreen(),
-        '/vdbLanding':(context) => const VdbLandingScreen(),
-        '/login':(context)=> const LoginScreen(),
-        '/propertyOnboarding':(context) => PropertyOnboardingScreen(),
-        '/deviceOnboarding':(context) => DeviceOnboardingScreen(),
-        '/wifi0nboarding':(context) => WifiOnboardingScreen(),
-        '/live':(context)=> LiveVideoScreen(),
-        '/settings':(context) => Settings(),
+        '/vdbLanding': (context) => const VdbLandingScreen(),
+        '/login': (context) => const LoginScreen(),
+        '/propertyOnboarding': (context) => PropertyOnboardingScreen(),
+        '/deviceOnboarding': (context) => DeviceOnboardingScreen(),
+        '/wifi0nboarding': (context) => WifiOnboardingScreen(),
+        '/live': (context) => LiveVideoScreen(),
+        '/settings': (context) => Settings(),
       },
     );
   }
