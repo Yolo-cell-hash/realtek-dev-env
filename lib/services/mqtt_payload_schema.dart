@@ -12,6 +12,9 @@ class MqttPayloadSchema {
   final String _cmdTypeDeleteFace = "face.delete";
   final String _cmdTypeSurveillanceModeEnabled = "enable.surveillance";
   final String _cmdTypeSurveillanceModeDisabled = "disable.surveillance";
+  final String _cmdTypeReadLeaveAtDoor = "read.leave_at_door";
+  final String _cmdTypeReadOneMoment = "read.one_moment";
+  final String _cmdTypeReadNoThanks = "read.no_thanks";
 
   late final Map<String, dynamic> messageStreamStart = {
     "msg_type": _cmdTypeStartStream,
@@ -110,11 +113,51 @@ class MqttPayloadSchema {
     }
   };
 
+  late final Map<String, dynamic> messageToReadLeaveAtDoor = {
+    "msg_type": _cmdTypeReadLeaveAtDoor,
+    "msg_id": "${_cmdTypeReadLeaveAtDoor}_$timestamp",
+    "timestamp": timestamp,
+    "user_id": _clientId,
+    "source": "app",
+    "payload": {
+      "session_id": "session_$timestamp",
+      "quality": _videoQuality,
+      "codec": _videoCodec,
+      "resolution": _resolution,
+      "audio_enabled": true,
+      "ice_servers": <String>['dummyIceServer1']
+    }
+  };
 
+  late final Map<String, dynamic> messageToReadOneMoment = {
+    "msg_type": _cmdTypeReadOneMoment,
+    "msg_id": "${_cmdTypeReadOneMoment}_$timestamp",
+    "timestamp": timestamp,
+    "user_id": _clientId,
+    "source": "app",
+    "payload": {
+      "session_id": "session_$timestamp",
+      "quality": _videoQuality,
+      "codec": _videoCodec,
+      "resolution": _resolution,
+      "audio_enabled": true,
+      "ice_servers": <String>['dummyIceServer1']
+    }
+  };
 
-
-
-
-
-
+  late final Map<String, dynamic> messageToReadNoThanks = {
+    "msg_type": _cmdTypeReadNoThanks,
+    "msg_id": "${_cmdTypeReadNoThanks}_$timestamp",
+    "timestamp": timestamp,
+    "user_id": _clientId,
+    "source": "app",
+    "payload": {
+      "session_id": "session_$timestamp",
+      "quality": _videoQuality,
+      "codec": _videoCodec,
+      "resolution": _resolution,
+      "audio_enabled": true,
+      "ice_servers": <String>['dummyIceServer1']
+    }
+  };
 }

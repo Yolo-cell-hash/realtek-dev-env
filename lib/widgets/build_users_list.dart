@@ -8,44 +8,25 @@ class BuildUsersList extends StatefulWidget {
 }
 
 class _BuildUsersListState extends State<BuildUsersList> {
-  @override
-
   final List<_UserEntry> _users = const [
-    _UserEntry(
-      name: 'Sarah Jenkins',
-      role: 'Owner - Full Access',
-      isOwner: true,
-      isOnline: true,
-      isExpired: false,
-      avatarUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuDjJ-AhN9r_6An4AvMRbgiYwZi0mwd0JufYGRq6DHzefWyGM3V-8rC_Xleh1T8lRakCBFgdZ9NtyPpHEnWqhsp8pdX3duxvo8M5gr4pSSNAaQpKIKo-nS3LSscAddwLjrAlFIU-cKzO2toncJzRF6mzE089eN3JMCRFm3WhX_OP3FCafcM0vt26BPVfG0zejZax9Yd-1CYJysfPvyxoFJBY6TWhBK13clzfrTcMd0SAD9VT8V1uHUf1yFezy1JdSULlgP5eoHnjNdtG',
-    ),
-    _UserEntry(
-      name: 'Marcus Thompson',
-      role: 'Family - Scheduled Access',
-      isOwner: false,
-      isOnline: false,
-      isExpired: false,
-      avatarUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuCuNjEsHZ7DcoalQcNVqUn5dLy-d_m03DbsxD__58TH_op_Kkq8nopj3my8lskkLKz6HoVMn7AyuUvcjAUdkYXLssFbIaphGE8FFS_Sa6Kj0aAV4HsJ4IXVrO6TDrWSmBI0xQhcZ4CYqUqq7rkOKZeUwBal2jm1lRC-ydUn1agJDOK6hIiwwivCuXw4XGdhip_ps4mXkIRim6EILw8l2g_0IAjk44GCTK5MiM4hacfHpdvmEjrpjzqdvUQ9d2P6DjWmEzUyiMfR8SPf',
-    ),
-    _UserEntry(
-      name: 'David Chen',
-      role: 'Guest - One-time Pass',
-      isOwner: false,
-      isOnline: false,
-      isExpired: false,
-      avatarUrl:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuBIVYihfwFROEJZSckdXlMWSIX-ppGs5fdfyTG6abmqJ1qnY1iUxZLZs5jobNuNiSlh60n-ryKUVZkXKHJyl5UzTob56iQNsqjo14FPm_U-ZVjyeSsJEJDR_U9DDbwdCuCc4U077v4wLQjRa6tvAR08y9cvNsBe-GQ0wjOZgGaCpPImPdO77aB-NOPX-AuABFAOM3MJa7o3m-Dm5yuIQGGjn8ytK8cXx0vDL3wa6_ugxGRhNNfCO3oL1GSKiAsk5vAPVx-Ik12AKRxL',
-    ),
-    _UserEntry(
-      name: 'Expired Access',
-      role: 'Technician - Maintenance',
-      isOwner: false,
-      isOnline: false,
-      isExpired: true,
-      avatarUrl: null,
-    ),
+    // _UserEntry(
+    //   name: 'Sarah Jenkins',
+    //   role: 'Owner - Full Access',
+    //   isOwner: true,
+    //   isOnline: true,
+    //   isExpired: false,
+    //   avatarUrl:
+    //   'https://lh3.googleusercontent.com/aida-public/AB6AXuDjJ-AhN9r_6An4AvMRbgiYwZi0mwd0JufYGRq6DHzefWyGM3V-8rC_Xleh1T8lRakCBFgdZ9NtyPpHEnWqhsp8pdX3duxvo8M5gr4pSSNAaQpKIKo-nS3LSscAddwLjrAlFIU-cKzO2toncJzRF6mzE089eN3JMCRFm3WhX_OP3FCafcM0vt26BPVfG0zejZax9Yd-1CYJysfPvyxoFJBY6TWhBK13clzfrTcMd0SAD9VT8V1uHUf1yFezy1JdSULlgP5eoHnjNdtG',
+    // ),
+    // _UserEntry(
+    //   name: 'Marcus Thompson',
+    //   role: 'Family - Scheduled Access',
+    //   isOwner: false,
+    //   isOnline: false,
+    //   isExpired: false,
+    //   avatarUrl:
+    //   'https://lh3.googleusercontent.com/aida-public/AB6AXuCuNjEsHZ7DcoalQcNVqUn5dLy-d_m03DbsxD__58TH_op_Kkq8nopj3my8lskkLKz6HoVMn7AyuUvcjAUdkYXLssFbIaphGE8FFS_Sa6Kj0aAV4HsJ4IXVrO6TDrWSmBI0xQhcZ4CYqUqq7rkOKZeUwBal2jm1lRC-ydUn1agJDOK6hIiwwivCuXw4XGdhip_ps4mXkIRim6EILw8l2g_0IAjk44GCTK5MiM4hacfHpdvmEjrpjzqdvUQ9d2P6DjWmEzUyiMfR8SPf',
+    // ),
   ];
 
   Widget build(BuildContext context) {

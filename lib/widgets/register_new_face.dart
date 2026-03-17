@@ -11,7 +11,9 @@ class RegisterNewFace extends StatelessWidget {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.pushNamed(context, '/newUserOnboarding');
+          },
           borderRadius: BorderRadius.circular(12),
           child: Ink(
             decoration: BoxDecoration(
