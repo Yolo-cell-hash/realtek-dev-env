@@ -18,7 +18,7 @@ class BottomNav extends StatelessWidget {
       {'icon': Icons.home_rounded, 'label': 'Home'},
       {'icon': Icons.videocam_rounded, 'label': 'Live'},
       {'icon': Icons.history_rounded, 'label': 'Events'},
-      {'icon': Icons.settings_outlined, 'label': 'Settings'},
+      {'icon': Icons.people, 'label': 'Users'},
     ];
 
     return Container(

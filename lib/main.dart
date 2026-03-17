@@ -14,6 +14,7 @@ import 'package:vdb_realtek/screens/login_screen.dart';
 import 'package:vdb_realtek/screens/settings.dart';
 import 'package:vdb_realtek/screens/wifi_onboarding_screen.dart';
 import 'package:vdb_realtek/screens/live_video_screen.dart';
+import 'package:vdb_realtek/screens/users_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -135,6 +136,7 @@ class _MyAppState extends State<MyApp> {
         '/wifi0nboarding': (context) => WifiOnboardingScreen(),
         '/live': (context) => LiveVideoScreen(),
         '/settings': (context) => Settings(),
+        '/users':(context) => UsersScreen(),
       },
     );
   }

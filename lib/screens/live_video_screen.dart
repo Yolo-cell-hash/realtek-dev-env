@@ -235,7 +235,7 @@ class _LiveVideoScreenState extends State<LiveVideoScreen>
               Navigator.pushReplacementNamed(context, '/events');
               break;
             case 3:
-              Navigator.pushReplacementNamed(context, '/settings');
+              Navigator.pushReplacementNamed(context, '/users');
               break;
           }
         },

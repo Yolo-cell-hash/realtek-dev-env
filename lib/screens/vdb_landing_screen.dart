@@ -29,7 +29,7 @@ class _VdbLandingScreenState extends State<VdbLandingScreen> {
           case 0: break;
           case 1: Navigator.pushReplacementNamed(context, '/live'); break;
           case 2: Navigator.pushReplacementNamed(context, '/events'); break;
-          case 3: Navigator.pushReplacementNamed(context, '/settings'); break;
+          case 3: Navigator.pushReplacementNamed(context, '/users'); break;
         }
       }), // 0 = Home tab
     );
@@ -59,15 +59,6 @@ class _VdbLandingScreenState extends State<VdbLandingScreen> {
       titleSpacing: 0,
       title: Row(
         children: [
-          Container(
-            padding: const EdgeInsets.only(right: 6, top: 6.0, bottom: 6.0, left: 6.0),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.primary,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Icon(Icons.shield_outlined,
-                color: Colors.white, size: 24),
-          ),
           const SizedBox(width: 8),
           Text(
             propertyName,
@@ -87,15 +78,12 @@ class _VdbLandingScreenState extends State<VdbLandingScreen> {
           onPressed: () {},
         ),
         Padding(
-          padding: const EdgeInsets.only(right: 12),
-          child: CircleAvatar(
-            radius: 20,
-            backgroundColor: theme.colorScheme.primary.withOpacity(0.2),
-            backgroundImage: const AssetImage(
-              'images/user-profile.png',
-            ),
-          ),
-        ),
+          padding: EdgeInsets.only(right: 5),
+          child: IconButton(icon:Icon(Icons.settings),
+              color:theme.colorScheme.primary, onPressed: (){
+                Navigator.pushReplacementNamed(context, '/settings');
+            },)
+        )
       ],
     );
   }
