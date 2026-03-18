@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:vdb_realtek/widgets/bottom_nav.dart';
+import 'package:provider/provider.dart';
 
 import 'dart:convert';
 import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:flutter_kinesis_video_webrtc/flutter_kinesis_video_webrtc.dart';
+import 'package:vdb_realtek/services/mqtt_service.dart';
+
 
 class LiveVideoScreen extends StatefulWidget {
   const LiveVideoScreen({super.key});
@@ -28,8 +32,10 @@ class _LiveVideoScreenState extends State<LiveVideoScreen>
   bool _isLoading = false;
   bool sendAudio = false;
   bool sendVideo = false;
+  int _lastSeenVersion = -1;
   MediaStream? _localStream;
   SimpleWebSocket? _webSocket;
+  VoidCallback? _mqttListener;
 
   // Clock
   late Timer _clockTimer;
@@ -57,6 +63,11 @@ class _LiveVideoScreenState extends State<LiveVideoScreen>
 
   @override
   void dispose() {
+
+    if (_mqttListener != null) {
+      MqttService.instance.removeListener(_mqttListener!);
+    }
+
     _clockTimer.cancel();
     _pulseController.dispose();
     _rtcVideoRenderer.dispose();
@@ -77,6 +88,82 @@ class _LiveVideoScreenState extends State<LiveVideoScreen>
     final String mm = ist.minute.toString().padLeft(2, '0');
     final String ss = ist.second.toString().padLeft(2, '0');
     return '$hh:$mm:$ss $period';
+  }
+
+  void _sendQuickMessage(String lbl) {
+    final mqttService = context.read<MqttService>();
+
+    if(lbl.toString() == "Leave at door"){
+      mqttService.publish(
+        'vdb/sandbox_001/vdb-sandbox-001/cmd',
+        jsonEncode(mqttService.mqttPayloadSchema.messageToReadLeaveAtDoor),
+      );
+    }else if(lbl.toString() == "One moment"){
+      mqttService.publish(
+        'vdb/sandbox_001/vdb-sandbox-001/cmd',
+        jsonEncode(mqttService.mqttPayloadSchema.messageToReadOneMoment),
+      );
+    }else if(lbl.toString() == "No thanks"){
+      mqttService.publish(
+        'vdb/sandbox_001/vdb-sandbox-001/cmd',
+        jsonEncode(mqttService.mqttPayloadSchema.messageToReadNoThanks),
+      );
+    }else if(lbl.toString() == "Wait please"){
+      mqttService.publish(
+        'vdb/sandbox_001/vdb-sandbox-001/cmd',
+        jsonEncode(mqttService.mqttPayloadSchema.messageToReadNoThanks),
+      );
+    }
+
+
+    // Listen for enrollment result from MQTT
+    _startMqttListener(mqttService);
+  }
+
+  void _startMqttListener(MqttService mqttService) {
+    if (_mqttListener != null) {
+      mqttService.removeListener(_mqttListener!);
+    }
+
+    _lastSeenVersion = mqttService.messageVersion;
+
+    _mqttListener = () {
+      if (!mounted) return;
+      if (mqttService.messageVersion == _lastSeenVersion) return;
+      _lastSeenVersion = mqttService.messageVersion;
+
+      final topic = mqttService.lastReceivedTopic;
+      final payload = mqttService.lastReceivedPayload;
+
+      print('──────────────────────────────────────────────────');
+      print('[Enrollment] New message v${mqttService.messageVersion}');
+      print('[Enrollment] Topic: $topic');
+      print('[Enrollment] Payload: $payload');
+      print('──────────────────────────────────────────────────');
+
+      if (payload.isEmpty) return;
+
+      try {
+        final data = jsonDecode(payload) as Map<String, dynamic>;
+
+        final source = data['source'] as String? ?? '';
+        final msgType = data['msg_type'] as String? ?? '';
+
+        print('[Enrollment] source="$source", msg_type="$msgType"');
+
+        if (source == 'vdb') {
+          if (msgType == 'quick_message.success') {
+            print('[Quick Message] ✅ MATCH: quick_message.success from vdb');
+          } else if (msgType == 'quick_message.fail') {
+            print('[Quick Message] ❌ MATCH: quick_message.fail from vdb');
+          }
+        }
+      } catch (e) {
+        print('[Enrollment] Error parsing MQTT payload: $e');
+      }
+    };
+
+    mqttService.addListener(_mqttListener!);
   }
 
   Future<void> _startFeed() async {
@@ -560,7 +647,10 @@ class _LiveVideoScreenState extends State<LiveVideoScreen>
 
   Widget _quickResponseChip(String label) {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        print("TAPPED LABEL - $label");
+        _sendQuickMessage(label);
+      },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(

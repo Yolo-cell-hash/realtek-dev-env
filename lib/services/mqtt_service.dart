@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -18,14 +17,11 @@ class MqttService extends ChangeNotifier {
   static const String _endpoint =
       'a2d7mswwxh8eti-ats.iot.ap-south-1.amazonaws.com';
   static const int _port = 8883;
-  static const String _clientId = 'vdb-sandbox-001';
+  static const String _clientId = 'flutter-app-sandbox-001';
   static const String _baseTopic = 'vdb/sandbox_001/vdb-sandbox-001';
   static const String _publishTopic = '$_baseTopic/cmd';
 
-  // Subscribe to the cmd topic — the app publishes commands here AND
-  // receives responses (like enroll.success) on the same topic.
-  // ⚠️ The IoT policy must allow BOTH Subscribe AND Receive on this topic.
-  static const String _subscribeTopic = '$_baseTopic/cmd';
+  static const String _subscribeTopic = '$_baseTopic/#';
 
   MqttServerClient? _client;
   MqttPayloadSchema mqttPayloadSchema = MqttPayloadSchema();
@@ -71,7 +67,7 @@ class MqttService extends ChangeNotifier {
     _client = MqttServerClient.withPort(_endpoint, _clientId, _port);
     _client!.secure = true;
     _client!.securityContext = secCtx;
-    _client!.keepAlivePeriod = 30;
+    _client!.keepAlivePeriod = 60;
     _client!.logging(on: false);
     _client!.setProtocolV311();
 
@@ -106,7 +102,7 @@ class MqttService extends ChangeNotifier {
 
     _client!.connectionMessage = MqttConnectMessage()
         .withClientIdentifier(_clientId)
-        .startClean()
+        // .startClean()
         .withWillQos(MqttQos.atLeastOnce);
 
     print('[MQTT] Attempting connection to $_endpoint:$_port as $_clientId...');

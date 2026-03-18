@@ -15,6 +15,7 @@ class MqttPayloadSchema {
   final String _cmdTypeReadLeaveAtDoor = "read.leave_at_door";
   final String _cmdTypeReadOneMoment = "read.one_moment";
   final String _cmdTypeReadNoThanks = "read.no_thanks";
+  final String _cmdTypeReadWaitPlease = "read.wait_please";
 
   late final Map<String, dynamic> messageStreamStart = {
     "msg_type": _cmdTypeStartStream,
@@ -148,6 +149,22 @@ class MqttPayloadSchema {
   late final Map<String, dynamic> messageToReadNoThanks = {
     "msg_type": _cmdTypeReadNoThanks,
     "msg_id": "${_cmdTypeReadNoThanks}_$timestamp",
+    "timestamp": timestamp,
+    "user_id": _clientId,
+    "source": "app",
+    "payload": {
+      "session_id": "session_$timestamp",
+      "quality": _videoQuality,
+      "codec": _videoCodec,
+      "resolution": _resolution,
+      "audio_enabled": true,
+      "ice_servers": <String>['dummyIceServer1']
+    }
+  };
+
+  late final Map<String, dynamic> messageToReadWaitPlease = {
+    "msg_type": _cmdTypeReadWaitPlease,
+    "msg_id": "${_cmdTypeReadWaitPlease}_$timestamp",
     "timestamp": timestamp,
     "user_id": _clientId,
     "source": "app",
