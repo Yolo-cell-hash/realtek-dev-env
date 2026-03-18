@@ -111,7 +111,7 @@ class _LiveVideoScreenState extends State<LiveVideoScreen>
     }else if(lbl.toString() == "Wait please"){
       mqttService.publish(
         'vdb/sandbox_001/vdb-sandbox-001/cmd',
-        jsonEncode(mqttService.mqttPayloadSchema.messageToReadNoThanks),
+        jsonEncode(mqttService.mqttPayloadSchema.messageToReadWaitPlease),
       );
     }
 

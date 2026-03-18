@@ -21,7 +21,7 @@ class MqttService extends ChangeNotifier {
   static const String _baseTopic = 'vdb/sandbox_001/vdb-sandbox-001';
   static const String _publishTopic = '$_baseTopic/cmd';
 
-  static const String _subscribeTopic = '$_baseTopic/#';
+  static const String _subscribeTopic = '$_baseTopic/evt';
 
   MqttServerClient? _client;
   MqttPayloadSchema mqttPayloadSchema = MqttPayloadSchema();
